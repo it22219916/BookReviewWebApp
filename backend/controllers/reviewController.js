@@ -37,7 +37,11 @@ exports.createReview = async (req, res) => {
     await review.save();
     res.status(201).json(review);
   } catch (error) {
-    res.status(400).json({ error: "Error creating review" });
+    if (!res.headersSent) {
+      res.status(400).json({ message: error.message });
+    } else {
+      console.error("Headers already sent:", error);
+    }
   }
 };
 
@@ -51,8 +55,12 @@ exports.updateReview = async (req, res) => {
       return res.status(404).json({ message: "Review not found" });
     }
     res.status(200).json(review);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(400).json({ message: error.message });
+    } else {
+      console.error("Headers already sent:", error);
+    }
   }
 };
 
@@ -64,7 +72,11 @@ exports.deleteReview = async (req, res) => {
       return res.status(404).json({ message: "Review not found" });
     }
     res.status(200).json({ message: "Review deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(400).json({ message: error.message });
+    } else {
+      console.error("Headers already sent:", error);
+    }
   }
 };
