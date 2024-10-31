@@ -3,7 +3,7 @@ const Review = require("../models/Review");
 // Get all reviews
 exports.getReviews = async (req, res) => {
   try {
-    const reviews = await Review.find();
+    const reviews = await Review.find().populate("author", "username email");
     res.status(200).json(reviews);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -13,24 +13,31 @@ exports.getReviews = async (req, res) => {
 // Get review by ID
 exports.getReviewById = async (req, res) => {
   try {
-    const review = await Review.findById(req.params.id);
-    if (!review) {
-      return res.status(404).json({ message: "Review not found" });
-    }
-    res.status(200).json(review);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const review = await Review.findById(req.params.id).populate(
+      "author",
+      "username email"
+    );
+    if (!review) return res.status(404).json({ error: "Review not found" });
+    res.json(review);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
   }
 };
 
 // Create a new review
 exports.createReview = async (req, res) => {
-  const review = new Review(req.body);
   try {
-    const newReview = await review.save();
-    res.status(201).json(newReview);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    const { title, rating, reviewText } = req.body;
+    const review = new Review({
+      title,
+      author: req.userId, // Set the author to the logged-in user's ID
+      rating,
+      reviewText,
+    });
+    await review.save();
+    res.status(201).json(review);
+  } catch (error) {
+    res.status(400).json({ error: "Error creating review" });
   }
 };
 
