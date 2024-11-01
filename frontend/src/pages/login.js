@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { loginUser } from "../services/authService";
 import logo from "../assets/LitLens.png";
-import { Link } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,8 +13,13 @@ const Login = () => {
     try {
       await loginUser(email, password);
       alert("Logged in successfully");
+      return redirect("/");
     } catch (error) {
-      console.error("Login failed:", error);
+      const errorMessage =
+        error?.response?.data?.error?.message ||
+        "please double check your credentials";
+      toast.error(errorMessage);
+      return null;
     }
   };
 

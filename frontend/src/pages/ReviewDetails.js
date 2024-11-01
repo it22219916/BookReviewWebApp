@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchReviewById } from "../services/reviewService";
+import { fetchReviewById, deleteReview } from "../services/reviewService";
+import { Link } from "react-router-dom";
 
 const ReviewDetails = () => {
   const { id } = useParams();
   const [review, setReview] = useState(null);
+  const [isAuthor, setIsAuthor] = useState(false);
 
   useEffect(() => {
     const loadReview = async () => {
       const fetchedReview = await fetchReviewById(id);
       setReview(fetchedReview);
+      if (fetchedReview.author._id === localStorage.getItem("userId")) {
+        setIsAuthor(true);
+      }
     };
     loadReview();
   }, [id]);
+
+  const handleDelete = async (id) => {
+    await deleteReview(id);
+    setReview(review.filter((review) => review.id !== id));
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -31,6 +41,22 @@ const ReviewDetails = () => {
             <span className="font-semibold">Date Added:</span>{" "}
             {review.dateAdded}
           </p>
+          {isAuthor && (
+            <div className="flex space-x-4 mt-2">
+              <Link
+                to={`/reviews/${review._id}/edit`}
+                className="text-yellow-500 hover:underline"
+              >
+                Edit
+              </Link>
+              <button
+                onClick={() => handleDelete(review.id)}
+                className="text-red-500 hover:underline"
+              >
+                Delete
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <p className="text-gray-500">Loading review...</p>

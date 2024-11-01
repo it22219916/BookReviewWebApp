@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { registerUser } from "../services/authService";
 import logo from "../assets/LitLens.png";
-import { Link } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -12,9 +13,14 @@ const Register = () => {
     e.preventDefault();
     try {
       await registerUser({ username, email, password });
-      alert("User registered successfully");
+      toast.success("account created successfully");
+      return redirect("/login");
     } catch (error) {
-      console.error("Registration failed:", error);
+      const errorMessage =
+        error?.response?.data?.error?.message ||
+        "please double check your credentials";
+      toast.error(errorMessage);
+      return null;
     }
   };
 

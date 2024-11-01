@@ -16,3 +16,8 @@ export const loginUser = async (email, password) => {
 export const logoutUser = () => {
   localStorage.removeItem("token");
 };
+
+export const isLoggedIn = () => {
+  const token = localStorage.getItem("token");
+  return !!token;
+};

@@ -6,10 +6,12 @@ import ReviewDetails from "./pages/ReviewDetails";
 import EditReview from "./pages/EditReview";
 import Login from "./pages/login";
 import Register from "./pages/register";
+import Header from "./components/Header";
 
 function App() {
   return (
     <Router>
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/reviews/new" element={<AddReview />} />
